@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      layout:decorate="~{layouts/layout_user1}">
+
+
+<th:block layout:fragment="css">
+    <link rel="stylesheet" th:href="@{/css/color/color1_knk.css}">
+    <link rel="stylesheet" th:href="@{/css/style_knk2.css}">
+    <link rel="stylesheet" th:href="@{/css/style_knk.css}">
+    <link rel="stylesheet" th:href="@{/css/owl-carousel_knk.css}">
+    <link rel="stylesheet" th:href="@{/css/reset_knk.css}">
+
+
+    <style>
+        .section {
+            padding: 200px 0 100px 0;
+        }
+    </style>
+
+</th:block>
+
+<div layout:fragment="content">
+    <div class="myticketing">
+        <div class="row">
+            <div class="col-12">
+                <div class="comments">
+                    <h3 class="comment-title">나의 예매내역</h3>
+                </div>
+                <div class="reply" th:each="pay : ${payList}">
+                    <div class="myticketing">
+                        <form class="form" action="#">
+                            <div class="row">
+                                <div class="col-12">
+                                    <div class="myticketing-form">
+                                        <h3>예매내역</h3>
+                                        <hr>
+                                        <div class="myticketing-title">
+                                            <img class="ratings" th:src="${pay.poster}">
+                                            <h4><b th:text="${pay.title}">파묘</b></h4>
+                                            <h>예매번호 00000000</h>
+                                        </div>
+                                        <img class="myticketing-poster2" src="img_knk/파묘_메인.jpg">
+                                        <div class="myticketing-info">
+                                            <h><b>상영일시</b> [[${pay.scrDate}]]</h>
+                                            <p>
+                                                <h><b>영화관</b> [[${pay.theaterInfo}]]</h>
+                                            <p>
+                                                <h><b>관람인원</b> [[${pay.visitors}]]</h>
+                                            <p>
+                                                <h><b>좌석</b> [[${pay.seat}]]</h>
+                                            <p>
+                                                <button class="cancel"
+                                                        onclick="cancel(); return false;">예매
+                                                    취소
+                                                </button>
+                                        </div>
+                                        <div id="clear"></div>
+                                        <hr>
+                                        <h><b>결제일시</b> [[${pay.paymentDate}]]</h>
+                                        <p>
+                                        <hr>
+                                        <h class="amout"><b>주문금액</b> [[${pay.price}]]원</h>
+                                        <h class="amout-total"><b>총 결제금액</b> [[${pay.price}]]원</h>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!--/ End Blog Single -->
+<th:block layout:fragment="script">
+    <script>
+        function cancel() {
+            if (confirm('예매를 취소하시겠습니까?')) {
+                alert("예매 취소가 완료되었습니다.");
+                location.href = "mypage_ticketing_cancel_knk.html";
+            } else {
+                alert("취소되었습니다.");
+            }
+        }
+    </script>
+</th:block>
+
+</html>

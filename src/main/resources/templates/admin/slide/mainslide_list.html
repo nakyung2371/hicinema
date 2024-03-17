@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{/layouts/layout_admin}">
+
+<th:block layout:fragment="css">
+    <link rel="stylesheet" th:href="@{/admin/css/slide_nsy.css}">
+</th:block>
+
+<div class="container-scroller">
+
+    <div class="container-fluid page-body-wrapper">
+
+        <div class="main-panel">
+            <div layout:fragment="content" class="content-wrapper">
+                <div class="col-lg-12 grid-margin stretch-card">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="form-group">
+                                <h3><i class="mdi mdi-ticket"></i>메인페이지 슬라이드</h3>
+                                <div class="save_button">
+                                    <label
+                                    ><i class="mdi mdi-receipt"></i>메인 슬라이드
+                                        목록</label
+                                    >
+
+                                    <button type="submit" class="button_btn"><a href="/admin/slide/mainslide_form">등록</a></button>
+                                </div>
+                                <table>
+                                    <thead>
+                                    <tr>
+                                        <th width="15%">번호</th>
+                                        <th width="30%">메인 슬라이드 사진</th>
+                                        <th width="20%">등록일</th>
+                                        <th width="15%">사용여부</th>
+                                        <th width="10%">수정</th>
+                                        <th width="10%">삭제</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    <tr th:each="mainSlide : ${mainSlideList}">
+                                        <td th:text="${mainSlide.id}"></td>
+                                        <td th:text="${mainSlide.imgId}"></td>
+                                        <td>2024-02-23</td>
+                                        <td>
+                                            <select name="slideUsed" class="slideUsedSelectd">
+                                                <option value="yes" selected>Y</option>
+                                                <option value="no">N</option>
+                                            </select>
+                                        </td>
+                                        <td>
+                                            <button
+                                                    class="edit_button"
+                                                    type="button"
+                                                    onclick="location.href='#' "
+                                            ><a href="/admin/slide/mainslide_detail"></a>
+                                                <i class="mdi mdi-pencil-box-outline"></i>
+                                            </button>
+                                        </td>
+                                        <td>
+                                            <button
+                                                    class="edit_button"
+                                                    type="button"
+                                                    onclick="location.href='#' "
+                                            >
+                                                <i class="mdi mdi-close-box-outline"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+
+                                <!-- 페이지네이션 버튼 -->
+                                <div class="pagination_container">
+                                    <button id="prevBtn" onclick="prevPage()">
+                                        <i class="mdi mdi-chevron-left"></i>
+                                    </button>
+                                    <button class="pageBtn" onclick="changePage(1)">1</button>
+                                    <button class="pageBtn" onclick="changePage(2)">2</button>
+                                    <button class="pageBtn" onclick="changePage(3)">3</button>
+                                    <button id="nextBtn" onclick="nextPage()">
+                                        <i class="mdi mdi-chevron-right"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- content-wrapper ends -->
+                        <!-- partial:../../partials/_footer.html -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+    </div>
+</div>
+
+<th:block layout:fragment="script">
+</th:block>
+
+</html>

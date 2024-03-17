@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<div th:fragment="mypage_name" class="col-12">
+					<div class="reply">
+						<form class="mypageform" action="#">
+							<div>
+								<h3>안녕하세요! <span th:text="${#authentication.name}"></span> 님</h3>
+							</div>
+						</form>
+					</div>
+				</div>
+</html>

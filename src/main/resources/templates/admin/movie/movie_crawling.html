@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{/layouts/layout_admin}">
+
+<head>
+    <meta name="_csrf" th:content="${_csrf.token}"/>
+    <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
+</head>
+
+<th:block layout:fragment="css">
+    <style>
+        th, td {
+            text-align: center;
+        }
+
+        .screen-type code{
+            cursor: pointer;
+        }
+
+        .screen-type code:hover, .screen-type code.active {
+            border-bottom: 1px solid #e83e8c;
+        }
+    </style>
+</th:block>
+
+<div class="container-scroller">
+
+    <div class="container-fluid page-body-wrapper">
+
+        <div class="main-panel">
+            <div layout:fragment="content" class="content-wrapper">
+                <div class="page-header">
+                    <h3 class="page-title">
+                        영화
+                    </h3>
+                    <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb">
+                            <li class="breadcrumb-item"><a href="#">Tables</a></li>
+                            <li class="breadcrumb-item active" aria-current="page">Basic tables</li>
+                        </ol>
+                    </nav>
+                </div>
+                <div class="row">
+                    <div class="col-lg-12 grid-margin stretch-card">
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-lg-6">
+                                        <h4 class="card-title">영화 리스트</h4>
+                                        <p class="card-description screen-type">
+                                            <code data-link="#">롯데시네마</code>
+                                        </p>
+                                    </div>
+                                </div>
+<!--                                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">-->
+                                <div id="list"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<th:block layout:fragment="script">
+    <script>
+        let get_info = () => {
+            $.ajax({
+                type: "get",
+                url: "/admin/movie/crawling/get_info",
+                data: "",
+                success: function (res) {
+                    if(typeof res === 'string') {
+                        res = JSON.parse(res)
+                    }
+                    console.log(res)
+
+                    for(let rs of res) {
+                        let div = document.createElement('div');
+                        let img  = document.createElement('img');
+                        img.src = rs.img;
+                        let p = document.createElement('p');
+                        p.textContent = rs.title
+                        div.append(img)
+                        div.append(p)
+                        div.dataset.id = rs.img.split("/").slice(-1)[0].split(".")[0].split('_')[0];
+                        div.dataset.title = rs.title;
+                        div.dataset.img = rs.img;
+                        div.classList.add("data");
+                        document.getElementById('list').append(div);
+                    }
+                    let btn = document.createElement('button');
+                    let btn2 = document.createElement('button');
+                    // btn.onclick = update;
+                    btn2.onclick = update2;
+                    // btn.textContent = 'update'
+                    btn2.textContent = 'update'
+                    document.getElementById('list').prepend(document.createElement('hr'));
+                    document.getElementById('list').prepend(btn2);
+                }
+            });
+        }
+
+        // let update = async () => {
+        //     let div = document.querySelectorAll("div.data");
+        //     let list = [];
+        //     let idx = 1;
+        //     for(let mv of div) {
+        //         let url = 'https://api.koreafilm.or.kr/openapi-data2/wisenut/search_api/search_json2.jsp'
+        //         let data = {
+        //             ServiceKey: 'E3EUFE1791CP9TBHQ6X6',
+        //             detail: 'Y',
+        //             title: mv.dataset.title,
+        //             collection: 'kmdb_new2',
+        //             listCount: 1
+        //         }
+        //
+        //         $.ajax({
+        //             type: "get",
+        //             url: url,
+        //             data: data,
+        //             async: true,
+        //             success: function (res) {
+        //                 if(typeof res === 'string') {
+        //                     res = JSON.parse(res)
+        //                 }
+        //                 // console.log(res.Data[0].Result)
+        //                 // console.log(res)
+        //                 if(res.Data[0].Result == undefined || res.Data[0].Result == null) {
+        //                     return
+        //                 } else {
+        //                     let li = res.Data[0].Result[0]
+        //                     let movie = {};
+        //                     movie['movieCd'] = mv.dataset.id
+        //                     movie['title'] = mv.dataset.title
+        //                     movie['imgUrl'] = mv.dataset.img
+        //                     movie['content'] = li.plots.plot[0].plotText;
+        //                     movie['posters'] = li.posters.replaceAll("|", ",")
+        //                     movie['stlls'] = li.stlls.replaceAll("|", ",")
+        //                     movie['rats'] = li.rating;
+        //                     movie['runtime'] = li.runtime;
+        //                     // console.log(movie)
+        //                     list.push(movie);
+        //                     idx++;
+        //                     // console.log("div : ", div.length)
+        //                     // console.log("idx : ", idx)
+        //                     if(div.length === idx) {
+        //                         save(list)
+        //                     }
+        //                 }
+        //                 // console.log(list)
+        //             }
+        //         });
+        //     }
+        //
+        //     // await save(list)
+        //
+        // }
+
+        let save = (list) => {
+            console.log(list)
+            console.log(list[0])
+            console.log(JSON.stringify(list))
+            $.ajax({
+                type: "post",
+                url: "update_movie_list",
+                data: JSON.stringify(list),
+                contentType: "application/json",
+                // dataType: "dataType",
+                success: function (res) {
+                    if(typeof res === 'string') {
+                        res = JSON.parse(res)
+                    }
+                    if(res.msg === 'success') {
+                        alert("성공!")
+                    }
+                }
+            });
+        }
+
+        let update2 = () => {
+            let token = $("meta[name='_csrf']").attr("content");
+            let header = $("meta[name='_csrf_header']").attr("content");
+
+            let div = document.querySelectorAll("div.data");
+            let list = [];
+            // let idx = 0;
+            for(let d of div) {
+                let obj = {};
+                obj['movieCd'] = d.dataset.id;
+                obj['title'] = d.dataset.title;
+                obj['imgUrl'] = d.dataset.img
+                list.push(obj);
+                //
+                // idx++;
+                // if(idx === 3) {
+                //     break;
+                // }
+                //
+            }
+
+            $.ajax({
+                type: "post",
+                url: "/admin/movie/crawling/get_details",
+                data: JSON.stringify(list),
+                contentType: "application/json",
+                beforeSend : function(xhr){
+                    /* 데이터를 전송하기 전에 헤더에 csrf값을 설정 */
+                    xhr.setRequestHeader(header, token);
+                },
+                // dataType: "dataType", // 서버에서 반환되는 데이터 형식
+                // processData:false, // 멀티파트폼으로 보내기위해서 설정
+                // contentType:false, // 멀티파트폼으로 보내기위해서 설정
+                // async: true, // 기본값true
+                success: function (res) {
+                    if(typeof res === 'string') {
+                        res = JSON.parse(res)
+                    }
+                    console.log(res)
+                    // if(res.msg === 'success') {
+                    if(res.length > 0) {
+                        alert("완료!")
+                        let list = res
+                        for(let li of list) {
+                            for(let di of div) {
+                                if(di.dataset.id === li) {
+                                    di.querySelector('img').onclick = () => {
+                                        location.href = 'get_movie_details?movieCd=' + li;
+                                    }
+                                }
+                            }
+                        }
+                    } else {
+
+                    }
+                }
+            });
+        }
+
+        window.onload = () => {
+            get_info();
+        }
+    </script>
+</th:block>
+
+</html>

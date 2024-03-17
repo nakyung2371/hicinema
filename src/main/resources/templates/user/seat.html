@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/layout_user1}">
+
+<head>
+    <meta name="_csrf" th:content="${_csrf.token}"/>
+    <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
+</head>
+
+<link rel="stylesheet" href="../../static/css/seat.css">
+<th:block layout:fragment="css">
+    <link rel="stylesheet" th:href="@{/css/seat.css}">
+</th:block>
+
+<div layout:fragment="content">
+
+    <!-- Shopping Cart -->
+    <div class="shopping-cart section">
+        <div class="container">
+            <div class="col-12 container-seat">
+                <div class="seat_row">
+                    <div class="col-12">
+                        <div class="screen">
+                            <label for="te">청소년 : </label><select class="ticket_num" name="te" id="te"
+                                                                  onchange="select_tic(this)">
+                            <option value="0">0</option>
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                            <option value="4">4</option>
+                            <option value="5">5</option>
+                            <option value="6">6</option>
+                            <option value="7">7</option>
+                            <option value="8">8</option>
+                        </select>
+                            <label for="ad">성인 : </label><select class="ticket_num" name="ad" id="ad"
+                                                                 onchange="select_tic(this)">
+                            <option value="0">0</option>
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                            <option value="4">4</option>
+                            <option value="5">5</option>
+                            <option value="6">6</option>
+                            <option value="7">7</option>
+                            <option value="8">8</option>
+                        </select>
+                            <h2>Screen</h2>
+                            <div class="window">
+                                <div class="screens"></div>
+                            </div>
+                        </div>
+                        <div class="seats" onclick="selectSeat(event)">
+                            <!-- Seats will be dynamically added here -->
+                        </div>
+                        <div id="submit">
+                            <span id="total_price">합계 : 0</span>
+                            <button type="button" onclick="next()" class="btn">선택</button>
+                            <form action="/reservation/ticketing/order/info" method="post" id="frm">
+<!--                                <input type="hidden" th:name="${_csrf.parameterName}"-->
+<!--                                       th:value="${_csrf.token}">-->
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--/ End Shopping Cart -->
+
+</div>
+
+<th:block layout:fragment="script">
+
+<script>
+    let _COLS = 1;
+    const abc = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
+    let rows_cnt = 0;
+    let total = 0;
+    const te_price = 10000;
+    const ad_price = 13000;
+
+    // 좌석을 동적으로 생성하는 함수
+    async function createSeats(rows, cols) {
+        const container = document.querySelector('.seats');
+
+        for (let i = 1; i <= rows; i++) {
+            const row = document.createElement('div');
+            row.classList.add('seat_row');
+
+            for (let j = 1; j <= cols; j++) {
+                const seat = document.createElement('div');
+                if (_COLS < 10) {
+                    seat.id = abc[rows_cnt] + '0' + _COLS;
+                } else {
+                    seat.id = abc[rows_cnt] + _COLS;
+                }
+                seat.classList.add('seat');
+                // if (abc[rows_cnt] === 'A') {
+                //     seat.setAttribute('disc', '-1000')
+                // }
+                seat.style.fontSize = '80%'
+                seat.innerHTML = seat.id
+                row.appendChild(seat);
+                _COLS++;
+            }
+
+            container.appendChild(row);
+            if (i % 3 === 0) {
+                rows_cnt++;
+                _COLS = 1;
+            }
+        }
+        await get_schedule();
+    }
+
+    // 좌석 선택을 처리하는 함수
+    function selectSeat(event) {
+        const seat = event.target;
+        // if(!seat.classList.contains('selected')) {
+        //   if (document.getElementsByClassName('selected').length + 1 > total) {
+        //     alert("선택한 인원보다 많이 선택")
+        //     return;
+        //   }
+        // }
+
+        if (total === 0) {
+            alert("인원을 선택해주세요")
+            return
+        }
+
+        // 클릭한 요소가 좌석이고 이미 선택되지 않았다면 선택 상태를 토글합니다.
+        if (seat.classList.contains('seat') && !seat.classList.contains('occupied') && !seat.classList.contains("paid")) {
+            seat.classList.toggle('selected');
+        }
+
+        let sels = document.querySelectorAll(".seat.selected");
+        let total_price = 0;
+        if (sels.length === total) {
+            let te = Number(document.getElementById('te').value);
+            let ad = Number(document.getElementById('ad').value);
+            total_price = (te * te_price) + (ad * ad_price)
+            for (let sel of sels) {
+                if (sel.getAttribute('disc')) {
+                    total_price += Number(sel.getAttribute('disc'))
+                }
+            }
+            all_selected(true);
+        } else {
+            all_selected(false)
+        }
+        document.getElementById('total_price').textContent = '합계 : ' + total_price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+    }
+
+    function select_tic(tag) {
+
+        let seats = document.getElementsByClassName("seat")
+        for (let seat of seats) {
+            if (seat.classList.contains("selected")) {
+                seat.classList.remove('selected')
+            }
+        }
+        total = 0;
+        let sels = document.getElementsByClassName('ticket_num')
+        for (let sel of sels) {
+            total += Number(sel.value);
+        }
+        if (total > 8) {
+            alert("최대 8명까지 선택가능합니다.")
+            tag.options[0].selected = true;
+            select_tic(tag)
+            return
+        }
+        all_selected(false)
+        document.getElementById('total_price').textContent = '합계 : 0'
+        console.log(total)
+    }
+
+    function next() {
+        let selected_seat = document.querySelectorAll(".seat.selected")
+        let disc = 0;
+        if (selected_seat.length < total) {
+            alert("선택한 인원보다 선택된 좌석이 적습니다.")
+            return
+        }
+
+        let data = {};
+        let arr = [];
+        let id_arr = [];
+        if (selected_seat.length > 0) {
+            for (let i = 0; i < selected_seat.length; i++) {
+                arr[i] = selected_seat[i].id;
+                if (selected_seat[i].getAttribute('disc')) {
+                    disc += Number(selected_seat[i].getAttribute('disc'))
+                }
+                id_arr.push(selected_seat[i].dataset.id)
+            }
+            data['seat'] = arr.join(",");
+        } else {
+            alert("좌석을 선택해주세요")
+            return
+        }
+
+        let te = document.getElementById('te').value;
+        let ad = document.getElementById('ad').value;
+        data['te'] = Number(te);
+        data['ad'] = Number(ad);
+        data['total_price'] = (te * te_price) + (ad * ad_price) + disc;
+        data['price'] = (te * te_price) + (ad * ad_price);
+        data['discount'] = disc
+        data['total'] = total;
+        console.log(data)
+        let frm = document.getElementById("frm");
+        let form = new FormData();
+        form.set("teenager", data['te']);
+        form.set("adult", data['ad']);
+        form.set("total_price", data['total_price']);
+        form.set("price", data['price']);
+        form.set("discount", data['discount']);
+        form.set("total", data['total']);
+        form.set("schedule_id", JSON.parse(sessionStorage.getItem("schedule")).schedule_id)
+        form.set("seat", data['seat']);
+        form.set("seats_id", id_arr.join(","))
+        let token = $("meta[name='_csrf']").attr("content");
+        let header = $("meta[name='_csrf_header']").attr("content");
+        form.set("_csrf", token);
+        form.set("_csrf_header", header);
+        for(let h of frm.querySelectorAll(".hid_data")) {
+            h.remove();
+        }
+        for(let k of form.keys()) {
+            let input = document.createElement('input')
+            input.className = "hid_data"
+            input.type = 'hidden';
+            input.name = k;
+            input.value = form.get(k);
+            frm.append(input);
+        }
+        frm.submit();
+    }
+
+    function all_selected(boolean) {
+        let seats = document.getElementsByClassName('seat');
+        if (boolean) {
+            for (let seat of seats) {
+                if (!seat.classList.contains('selected')) {
+                    seat.classList.add('occupied');
+                }
+            }
+        } else {
+            for (let seat of seats) {
+                seat.classList.remove('occupied');
+            }
+        }
+
+    }
+
+    let on_preloader = () => {
+        document.querySelector(".preloader").style.display = 'block'
+        $('body').addClass('no-scroll');
+        // $('.preloader').delay(sec * 1000).fadeOut('slow');
+        // setTimeout(function() {
+        // //After 2s, the no-scroll class of the body will be removed
+        // $('body').removeClass('no-scroll');
+        // }, sec * 1000); //Here you can change preloader time
+    }
+
+    let off_preloader = (sec) => {
+        $('.preloader').delay(sec * 1000).fadeOut('slow');
+        setTimeout(function() {
+            //After 2s, the no-scroll class of the body will be removed
+            $('body').removeClass('no-scroll');
+        }, sec * 1000); //Here you can change preloader time
+    }
+
+
+    let get_schedule = async () => {
+        on_preloader();
+        let id = JSON.parse(sessionStorage.getItem("schedule"));
+        console.log(id)
+        if(!id.schedule_id) {
+            alert("오류가 발생했습니다.")
+            location.href = "/reservation/ticketing"
+        }
+
+        $.ajax({
+            type: "get",
+            url: "/reservation/ticketing/get_seat_info",
+            data: {
+                id:id.schedule_id
+            },
+            success: function (res) {
+                if(typeof res === 'string') {
+                    res = JSON.parse(res)
+                }
+                if(res.msg === 'success') {
+                    let seats = JSON.parse(res.seats)
+                    console.log(seats)
+                    if(seats.length) {
+                        let divs = document.querySelectorAll(".seats .seat_row div.seat")
+                        for (let div of divs) {
+                            for (let seat of seats) {
+                                if(div.id == seat.name) {
+                                    div.dataset.id = seat.id;
+                                }
+                                if (seat.status == 'P' && div.id == seat.name) {
+                                    console.log(seat.name)
+                                    div.classList.add("paid");
+                                }
+                            }
+                        }
+                    }
+                } else {
+                    alert("오류가 발생했습니다.")
+                    location.href = "/reservation/ticketing"
+                }
+            }
+        });
+
+        await off_preloader(1)
+    }
+    window.onload = () => {
+        // 행과 열의 수를 설정합니다.
+        const numberOfRows = 12;
+        const numberOfColumns = 8;
+
+        // 좌석을 생성합니다.
+        createSeats(numberOfRows, numberOfColumns);
+    }
+
+</script>
+
+</th:block>>
+</html>

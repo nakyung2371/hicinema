@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+      
+      
+<div th:fragment="side" class="col-lg-3 col-12">
+		<div class="main-sidebar">
+						<!-- Single Widget -->
+						<div class="single-widget">
+							<a th:href="@{/member/mypage_main}"><h2 class="mypage">마이페이지</h2></a>
+						</div>
+						<!--/ End Single Widget -->
+						
+						<!-- Single Widget -->
+						<div class="single-widget category">
+							<h3 class="title">나의 예매내역</h3>
+							<ul class="categor-list">
+								<li><a href="/member/mypage/ticketing">예매내역</a></li>
+								<li><a href="/member/mypage/ticketing/cancel">취소내역</a></li>
+							</ul>
+						</div>
+						<!--/ End Single Widget -->
+
+						
+
+						<!-- Single Widget -->
+						<div class="single-widget category">
+							<h3 class="title">내가 본 영화</h3>
+							<ul class="categor-list">
+								<li><a href="#">내가 본 영화</a></li>
+								<li><a href="#">내가 쓴 평점</a></li>
+							</ul>
+						</div>
+						<!--/ End Single Widget -->
+						
+						<!-- Single Widget -->
+						<div class="single-widget category">
+							<h3 class="title">스토어</h3>
+							<ul class="categor-list">
+								<li><a href="#">결제내역</a></li>
+							</ul>
+						</div>
+						<!--/ End Single Widget -->
+						
+
+						<!-- Single Widget -->
+						<div class="single-widget category">
+							<h3 class="title">회원정보</h3>
+							<ul class="categor-list">
+								<li><a th:href="@{/member/mypage/mypage_edit}">개인정보 수정</a></li>
+								<li><a th:href="@{/member/mypage/mypage_secession}">회원탈퇴</a></li>
+							</ul>
+						</div>
+						<!--/ End Single Widget -->
+						<!-- Single Widget -->
+						<div class="single-widget category">
+							<h3 class="title">나의 문의내역</h3>
+							<ul class="categor-list">
+								<li><a href="#">1:1 문의</a></li>
+							</ul>
+						</div>
+						<!--/ End Single Widget -->
+						
+					</div>
+				</div>
+</html>

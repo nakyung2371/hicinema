@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{/layouts/layout_admin}">
+
+<head>
+    <meta name="_csrf" th:content="${_csrf.token}"/>
+    <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
+</head>
+
+<th:block layout:fragment="css">
+
+</th:block>
+
+<div class="container-scroller">
+
+    <div class="container-fluid page-body-wrapper">
+
+        <div class="main-panel">
+            <div layout:fragment="content" class="content-wrapper">
+                <div class="page-header">
+                    <h3 class="page-title">
+                        지역
+                    </h3>
+                    <!--            <nav aria-label="breadcrumb">-->
+                    <!--              <ol class="breadcrumb">-->
+                    <!--                <li class="breadcrumb-item"><a href="#"></a></li>-->
+                    <!--                <li class="breadcrumb-item active" aria-current="page">Basic tables</li>-->
+                    <!--              </ol>-->
+                    <!--            </nav>-->
+                </div>
+                <div class="row">
+                    <div class="col-lg-9 grid-margin stretch-card">
+                        <div class="card">
+                            <div class="card-body">
+                                <button class="btn btn-gradient-dark btn-fw" type="button" style="float: right"
+                                        onclick="add_loc()">+
+                                </button>
+                                <table class="table table-hover">
+                                    <thead>
+                                    <tr>
+                                        <th>No</th>
+                                        <th>지역명</th>
+                                        <th></th>
+                                    </tr>
+                                    </thead>
+                                    <tbody id="loc_list">
+                                    <tr>
+                                        <td colspan="3">등록된 지역이 없습니다.</td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<th:block layout:fragment="script">
+    <script>
+
+        let token = $("meta[name='_csrf']").attr("content");
+        let header = $("meta[name='_csrf_header']").attr("content");
+
+        let add_loc = () => {
+            let html = "";
+
+            if (!document.getElementById("add_loc")) {
+                if (document.getElementById("null")) {
+                    document.getElementById("null").remove();
+                }
+                html = "<tr id='add_loc'>" +
+                    "<td>1</td>" +
+                    "<td><input type='text' class='form-control' id='name' name=''></td>" +
+                    "<td>" +
+                        "<button type='button' class='btn btn-outline-secondary btn-rounded btn-icon' onclick='remove_loc()'><i class='mdi mdi-playlist-remove text-danger'></i></button>" +
+                        "<button type='button' class='btn btn-outline-secondary btn-rounded btn-icon' onclick='save_loc()'><i class='mdi mdi-playlist-check text-info'></i></button>" +
+                    "</td>" +
+                    "</tr>"
+            }
+            document.getElementById("loc_list").innerHTML += html
+        }
+
+        let remove_loc = (id, name) => {
+            if (!id) {
+                document.getElementById('add_loc').remove()
+                get_list();
+            } else {
+                $.ajax({
+                    type: "post",
+                    url: "/admin/movie/loc/delete",
+                    data: {
+                        id: id,
+                        name: name
+                    },
+                    beforeSend: function (xhr) {
+                        /* 데이터를 전송하기 전에 헤더에 csrf값을 설정 */
+                        xhr.setRequestHeader(header, token);
+                    },
+                    success: function (res) {
+                        get_list();
+                    }
+                });
+            }
+        }
+
+        let save_loc = () => {
+            let name = document.getElementById("name").value;
+            if (!name.trim()) {
+                alert("지역명을 입력해주세요.");
+                return
+            }
+
+            $.ajax({
+                type: "post",
+                url: "/admin/movie/loc/post",
+                data: {
+                    name: name,
+                },
+                beforeSend: function (xhr) {
+                    /* 데이터를 전송하기 전에 헤더에 csrf값을 설정 */
+                    xhr.setRequestHeader(header, token);
+                },
+                success: function (res) {
+                    get_list();
+                }
+            });
+        }
+
+        let get_list = () => {
+            let html = "";
+            $.ajax({
+                type: "get",
+                url: "/admin/movie/loc_list/get",
+                success: function (res) {
+                    if (typeof res === 'string') {
+                        res = JSON.parse(res)
+                    }
+                    if (res.length > 0) {
+                        let id = 1;
+                        for (let loc of res) {
+                            html += '<tr>' +
+                                '<td>' + id + '</td>' +
+                                '<td>' + loc.name + '</td>' +
+                                '<td>' +
+                                '<button type="button" class="btn btn-outline-secondary btn-rounded btn-icon text-danger" onclick="remove_loc(' + loc.id + ', \''+ loc.name +'\')">x' +
+                                '</button>' +
+                                '</td>' +
+                                '</tr>'
+                            id++;
+                        }
+                    } else {
+                        html = '<td colspan="3" id="null">등록된 지역이 없습니다.</td>';
+                    }
+                    document.getElementById("loc_list").innerHTML = html;
+                }
+            });
+        }
+
+        window.onload = () => {
+            get_list();
+        }
+    </script>
+</th:block>
+</body>
+
+</html>

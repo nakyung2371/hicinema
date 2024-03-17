@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/layout_user1}">
+
+<th:block layout:fragment="css">
+    <link rel="stylesheet" th:href="@{/css/movie_list.css}">
+</th:block>
+
+<div layout:fragment="content">
+    <section class="product-area shop-sidebar shop section">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="product-info">
+                                <div class="list-top">
+                                    <div class="shop-top nav-main">
+                                        <ul class="nav nav-tabs" id="myTab" role="tablist">
+                                            <li class="nav-item"><a class="nav-link" th:classappend="${(type == 'n')? 'active' : ''}" data-toggle="tab"
+                                                                    href="#screening"
+                                                                    role="tab">현재 상영작</a></li>
+                                            <li class="nav-item"><a class="nav-link" th:classappend="${(type == 'e')? 'active' : ''}" data-toggle="tab" href="#scheduled"
+                                                                    role="tab">미개봉</a></li>
+                                            <li class="nav-item"><a class="nav-link" data-toggle="tab"
+                                                                    href="#not_screen"
+                                                                    role="tab">미상영</a></li>
+                                        </ul>
+                                        <div class="sort-sel">
+                                            <span>예매순</span>
+                                            <span>좋아요순</span>
+                                            <span>관람평순</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="tab-content">
+                                    <div class="tab-pane fade" id="screening" th:classappend="${(type == 'n')? 'active show' : ''}" role="tabpanel">
+                                        <div class="tab-single">
+                                            <div class="row">
+                                                <div class="col-lg-2 col-md-6 col-12" th:if="now != null" th:each="mv:${now}">
+                                                    <div class="single-product">
+                                                        <div class="product-img">
+                                                            <div class="list-prod overlay">
+                                                                <img class="default-img"
+                                                                     th:src="${mv.imgUrl}"
+                                                                     alt="#">
+                                                                <div>
+                                                                    <a th:href="@{'/movie/detail/' + ${mv.movieCd}}">
+                                                                        상세보기
+                                                                    </a>
+                                                                    <a th:href="@{'/movie/detail/' + ${mv.movieCd}}">
+                                                                        예매하기
+                                                                    </a>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="product-content">
+                                                            <strong class="movie-list-info">
+                                                                <span th:class="${mv.rats == '15세이상관람가'} ? 'gr_15' : ''"></span>
+                                                                <span th:class="${mv.rats == '전체관람가'} ? 'gr_all' : ''"></span>
+                                                                <span th:class="${mv.rats == '12세이상관람가'} ? 'gr_12' : ''"></span>
+                                                                <span th:class="${mv.rats == '18세이상관람가'} ? 'gr_18' : ''"></span>
+                                                                <span th:text="${mv.title}"></span>
+                                                            </strong>
+                                                            <div class="product-price">
+                                                                <span>[[${mv.runtime}]]분</span>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="tab-pane fade" id="scheduled" th:classappend="${(type == 'e')? 'active show' : ''}" role="tabpanel">
+                                        <div class="tab-single">
+                                            <div class="row">
+                                                <div class="col-lg-2 col-md-6 col-12" th:if="soon != null" th:each="mv:${soon}">
+                                                    <div class="single-product">
+                                                        <div class="product-img">
+                                                            <div class="list-prod overlay">
+                                                                <img class="default-img"
+                                                                     th:src="${mv.imgUrl}"
+                                                                     alt="#">
+                                                                <div>
+                                                                    <a th:href="@{'/movie/detail/' + ${mv.movieCd}}">
+                                                                        상세보기
+                                                                    </a>
+                                                                    <a th:href="@{'/movie/detail/' + ${mv.movieCd}}">
+                                                                        예매하기
+                                                                    </a>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="product-content">
+                                                            <strong class="movie-list-info">
+                                                                <span class="gr_15"></span>
+                                                                <span th:text="${mv.title}"></span>
+                                                            </strong>
+                                                            <div class="product-price">
+                                                                <span>[[${mv.runtime}]]분</span>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="tab-pane fade" id="not_screen" role="tabpanel">
+                                        <div class="tab-single">
+                                            <div class="row">
+                                                <div class="col-lg-2 col-md-6 col-12" th:if="end != null" th:each="mv:${end}">
+                                                    <div class="single-product">
+                                                        <div class="product-img">
+                                                            <div class="list-prod overlay">
+                                                                <img class="default-img"
+                                                                     th:src="${mv.imgUrl}"
+                                                                     alt="#">
+                                                                <div>
+                                                                    <a th:href="@{'/movie/detail/' + ${mv.movieCd}}">
+                                                                        상세보기
+                                                                    </a>
+                                                                    <a th:href="@{'/movie/detail/' + ${mv.movieCd}}">
+                                                                        예매하기
+                                                                    </a>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="product-content">
+                                                            <strong class="movie-list-info">
+                                                                <span class="gr_15"></span>
+                                                                <span th:text="${mv.title}"></span>
+                                                            </strong>
+                                                            <div class="product-price">
+                                                                <span>[[${mv.runtime}]]분</span>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+
+<th:block layout:fragment="script">
+    <script>
+        window.onload = () => {
+            // 모바일의 경우
+            if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
+                let images = document.getElementsByClassName("default-img");
+                for (let img of images) {
+                    img.addEventListener("click", function (e) {
+                        location.href = "movie_detail.html";
+                    })
+                }
+            }
+        }
+    </script>
+</th:block>
+</html>

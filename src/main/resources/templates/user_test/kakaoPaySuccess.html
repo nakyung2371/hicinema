@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Insert title here</title>
+</head>
+<body>
+
+<!--카카오페이 결제가 정상적으로 완료되었습니다.-->
+
+<!--결제일시:     [[${info.approved_at}]]<br/>-->
+<!--주문번호:    [[${info.partner_order_id}]]<br/>-->
+<!--상품명:    [[${info.item_name}]]<br/>-->
+<!--&lt;!&ndash;상품수량:    [[${info.quantity}]]<br/>&ndash;&gt;-->
+<!--결제금액:    [[${info.amount.total}]]<br/>-->
+<!--결제방법:    [[${info.payment_method_type}]]<br/>-->
+
+<input type="hidden" th:field="*{info.approved_at}">
+<input type="hidden" th:field="*{info.partner_order_id}">
+<input type="hidden" th:field="*{info.item_name}">
+<input type="hidden" th:field="*{info.quantity}">
+<input type="hidden" th:field="*{info.amount.total}">
+<input type="hidden" th:field="*{info.payment_method_type}">
+<input type="hidden" name="paymentId" id="paymentId" th:value="${payId}">
+
+
+<h2>[[${info}]]</h2>
+
+<script !src="">
+    let par = window.opener
+    console.log(par)
+    if(par) {
+        let data = {}
+        let input = document.querySelectorAll('input');
+        for(let it of input) {
+            data[it.id] = it.value
+        }
+        window.opener.getPayInfo(JSON.stringify(data));
+        window.close()
+
+    }
+</script>
+</body>
+</html>

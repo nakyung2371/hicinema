@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{/layouts/layout_admin}">
+
+<th:block layout:fragment="css">
+<link rel="stylesheet" th:href="@{/admin/css/style_knk.css}">
+
+<style>
+.active .page-link {
+    z-index: 1;
+    color: #fff;
+    background-color: #8a63c2 !important;
+    border-color: #c378ff !important;
+  }
+  
+.pagination {
+    margin-top: 20px !important; 
+    }
+    
+ .page-link {
+    color: #ae66ff;
+ } 
+
+</style>
+</th:block>
+
+
+
+  <div class="container-scroller">
+   
+    <!-- partial -->
+    <div class="container-fluid page-body-wrapper">
+   
+
+      <div class="main-panel">
+      
+        <div layout:fragment="content" class="content-wrapper">
+          <div class="page-header">
+            <h3 class="page-title">
+              <b>회원 목록</b>
+            </h3>
+            <nav aria-label="breadcrumb">
+              <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="#">회원 관리</a></li>
+                <li class="breadcrumb-item active" aria-current="page">회원 목록</li>
+              </ol>
+            </nav>
+          </div>
+          <div class="row">
+            <div class="col-md-6 grid-margin stretch-card">
+              <div class="card">
+              </div>
+            </div>
+            <div class="col-lg-12 grid-margin stretch-card">
+              <div class="card">
+                <div class="card-body">
+                  <p class="card-description1">
+                    회원 목록 <code>10</code>
+                  </p>
+                  
+                  <div class="searchbox">
+                  <select class="form-control form-control-lg" id="selectbox">
+                    <option>이름</option>
+                    <option>아이디</option>
+                    <option>휴대폰 번호</option>
+                    <option>이메일</option>
+                  </select>
+                  
+                  <div class="WD-btn">
+                    
+                    <div class="form-group">
+                      <div class="input-group">
+                        <input type="text" class="form-control" placeholder="
+                        " aria-label="Recipient's username" aria-describedby="basic-addon">
+                        <div class="input-group-append">
+                          <button class="btn btn-sm btn-gradient-primary" type="button">검색</button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  </div>
+                  <table class="table table-bordered">
+                    <thead>
+                      <tr>
+                        <th class="thcheckbox">
+                          <div class="form-check ">
+                            <label class="form-check-label">
+                              <input type="checkbox" class="form-check-input all_check">
+                              <i class="input-helper"></i></label>
+                          </div>
+                        </th>
+                        <th class="thnumber">
+                          번호
+                        </th>
+                        <th class="thid">
+                          아이디
+                        </th>
+                        <th class="thname">
+                          이름
+                        </th>
+                        <th class="themail">
+                          이메일
+                        </th>
+                        <th class="thdate">
+                          가입일
+                        </th>
+                        <th class="thauthority">
+                          권한
+                        </th>
+                        <th class="thmanagement">
+                          관리
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr th:each="member, loop : ${paging}">
+                        <td>
+                          <div class="form-check">
+                            <label class="form-check-label">
+                              <input type="checkbox" class="form-check-input">
+                              <i class="input-helper"></i></label>
+                          </div>
+                        </td>
+
+                        <td th:text="${paging.getTotalElements - (paging.number * paging.size) - loop.index}"></td>
+                        <td><a th:href="@{|/admin/member/member_edit/${member.memberId}|}" th:text="${member.memberId}"></a></td>
+                        <td th:text="${member.name}"></td>
+                        <td th:text="${member.email}"></td>
+                        <td th:text="${#temporals.format(member.regdate, 'yyyy-MM-dd HH:mm')}"></td>
+                        <td th:text="${member.role}"></td>
+                       
+                        <td>
+                          <button type="button" class="btn btn-outline-secondary btn-sm" onclick="location.href='http://192.168.0.68:5500/admin/event_edit_knk.html';">수정</button>
+                          <button type="button" class="btn btn-gradient-primary btn-sm">삭제</button>
+                        </td>
+                      </tr>
+                      
+
+                    </tbody>
+                  </table>
+                  
+                    <!-- 페이징처리 시작 -->
+				    <div th:if="${!paging.isEmpty()}">
+				        <ul class="pagination justify-content-center">
+				            <li class="page-item" th:classappend="${!paging.hasPrevious} ? 'disabled'">
+				                <a class="page-link"
+				                    th:href="@{|?page=${paging.number-1}|}">
+				                    <span>이전</span>
+				                </a>
+				            </li>
+				            <li th:each="page: ${#numbers.sequence(0, paging.totalPages-1)}"
+				            	th:if="${page >= paging.number-2 and page <= paging.number+2}"
+				                th:classappend="${page == paging.number} ? 'active'" 
+				                class="page-item">
+				                <a th:text="${page + 1}" class="page-link" th:href="@{|?page=${page}|}"></a>
+				            </li>
+				            <li class="page-item" th:classappend="${!paging.hasNext} ? 'disabled'">
+				                <a class="page-link" th:href="@{|?page=${paging.number+1}|}">
+				                    <span>다음</span>
+				                </a>
+				            </li>
+				        </ul>
+				    </div>
+				    <!-- 페이징처리 끝 -->
+                  
+                </div>
+              </div>
+
+
+            </div>
+
+
+
+
+          </div>
+        </div>
+        <!-- content-wrapper ends -->
+
+        <!-- partial -->
+      </div>
+      <!-- main-panel ends -->
+    </div>
+    <!-- page-body-wrapper ends -->
+  </div>
+  <!-- container-scroller -->
+  <!-- plugins:js -->
+  <script src="vendors/js/vendor.bundle.base.js"></script>
+  <script src="vendors/js/vendor.bundle.addons.js"></script>
+  <!-- endinject -->
+  <!-- inject:js -->
+  <script src="js/off-canvas.js"></script>
+  <script src="js/misc.js"></script>
+  <!-- endinject -->
+  <!-- Custom js for this page-->
+  <script src="js/file-upload.js"></script>
+  <!-- End custom js for this page-->
+
+  <!-- 페이지 버튼 -->
+  <script>
+    function previousPage() {
+      // 여기에 이전 페이지로 이동하는 코드를 추가하세요
+      // 예: window.location.href = "이전 페이지 URL";
+    }
+
+    function nextPage() {
+      // 여기에 다음 페이지로 이동하는 코드를 추가하세요
+      // 예: window.location.href = "다음 페이지 URL";
+    }
+
+    // custom js - bmh (체크박스 - table 형식의 리스트)
+    (function () {
+      let all = document.getElementsByClassName('all_check');
+
+      for (let a of all) {
+        a.addEventListener('change', function () {
+          let parent = a.parentNode;
+          let bro;
+          let table;
+          while (parent) {
+            if (parent.tagName === 'TABLE') {
+              table = parent;
+              break;
+            }
+            parent = parent.parentNode
+          }
+          bro = parent.querySelectorAll('td input[type="checkbox"]');
+          checkbox_control(a, bro);
+          for (let b of bro) {
+            b.addEventListener('change', function () {
+              let bro_cnt = parent.querySelectorAll('td input[type="checkbox"]:checked').length
+              a.checked = (bro_cnt === bro.length);
+            })
+          }
+        })
+      }
+
+      function checkbox_control(all, bro) {
+        console.log(all)
+        console.log(bro)
+        if (all.checked) {
+          for (let b of bro) {
+            b.checked = true
+          }
+        } else {
+          for (let b of bro) {
+            b.checked = false;
+          }
+        }
+      }
+    })();
+
+  </script>
+
+
+</body>
+
+</html>
